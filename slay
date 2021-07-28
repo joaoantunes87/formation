@@ -102,18 +102,38 @@ fi
 # -----------------------------------------------------------------------------
 # NVM
 # -----------------------------------------------------------------------------
-if [ -x nvm ]; then
-	step "Installing NVM…"
-	curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
-	print_success "NVM installed!"
-	step "Installing latest Node…"
-	nvm install node
-	nvm use node
-	nvm run node --version
-	nodev=$(node -v)
-	print_success "Using Node $nodev!"
+# if [ -x nvm ]; then
+#	step "Installing NVM…"
+#	curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
+#	print_success "NVM installed!"
+#	step "Installing latest Node…"
+#	nvm install node
+#	nvm use node
+#	nvm run node --version
+#	nodev=$(node -v)
+#	print_success "Using Node $nodev!"
+#else
+#	print_success_muted "NVM/Node already installed. Skipping."
+#fi
+
+# -----------------------------------------------------------------------------
+# VOLTA with NODE and YARN
+# -----------------------------------------------------------------------------
+if [ -x volta ]; then
+	step "Installing Volta"
+
+	curl https://get.volta.sh | bash
+
+	echo "export VOLTA_HOME=\"$HOME/.volta\"" >> ~/.bash_profile
+	echo "export PATH=\"$VOLTA_HOME/bin:$PATH\"" >> ~/.bash_profile
+	source ~/.bash_profile
+
+	volta install node
+	volta install yarn
+
+	print_success "Volta installed!"
 else
-	print_success_muted "NVM/Node already installed. Skipping."
+	print_success_muted "Volta already installed. Skipping."
 fi
 
 # -----------------------------------------------------------------------------
@@ -165,28 +185,28 @@ fi
 ###############################################################################
 # INSTALL: Mac App Store Apps
 ###############################################################################
-chapter "Installing apps from App Store…"
-if [ -x mas ]; then
+# chapter "Installing apps from App Store…"
+#if [ -x mas ]; then
 
-	print_warning "Please install mas-cli first: brew mas. Skipping."
+#	print_warning "Please install mas-cli first: brew mas. Skipping."
 
-	else
+#	else
 
-	if [ -e $cwd/swag/apps ]; then
-		if mas_setup; then
+#	if [ -e $cwd/swag/apps ]; then
+#		if mas_setup; then
 			# Workaround for associative array in Bash 3
 			# https://stackoverflow.com/questions/6047648/bash-4-associative-arrays-error-declare-a-invalid-option
-			for app in $(<$cwd/swag/apps); do
-				KEY="${app%%::*}"
-				VALUE="${app##*::}"
-				install_application_via_app_store $KEY $VALUE
-			done
-		else
-			print_warning "Please signin to App Store first. Skipping."
-		fi
-	fi
+#			for app in $(<$cwd/swag/apps); do
+#				KEY="${app%%::*}"
+#				VALUE="${app##*::}"
+#				install_application_via_app_store $KEY $VALUE
+#			done
+#		else
+#			print_warning "Please signin to App Store first. Skipping."
+#		fi
+#	fi
 
-fi
+#fi
 
 ###############################################################################
 # CLEAN: Homebrew files
@@ -197,30 +217,42 @@ brew cleanup 2> /dev/null
 ###############################################################################
 # INSTALL: npm packages
 ###############################################################################
-if [ -e $cwd/swag/npm ]; then
-	chapter "Installing npm packages…"
+#if [ -e $cwd/swag/npm ]; then
+#	chapter "Installing npm packages…"
+#
+#	for pkg in $(<$cwd/swag/npm); do
+#		KEY="${pkg%%::*}"
+#		VALUE="${pkg##*::}"
+#		install_npm_packages $KEY $VALUE
+#	done
+#fi
 
-	for pkg in $(<$cwd/swag/npm); do
-		KEY="${pkg%%::*}"
-		VALUE="${pkg##*::}"
-		install_npm_packages $KEY $VALUE
-	done
-fi
+###############################################################################
+# GIT CONFIGS
+###############################################################################
+cp swag/gitconfig ~/.gitconfig
 
+###############################################################################
+# SSH CONFIGS
+###############################################################################
+mkdir ~/.ssh
+cp swag/ssh_configs ~/.ssh/config
+ssh-keygen -t rsa -b 4096 -C "joaoantunes87@gmail.com"
+ssh-add -K ~/.ssh/id_rsa
 
 ###############################################################################
 # OPTIONAL: Customizations
 ###############################################################################
-chapter "Adding hot sauce…"
-if [ -f "$HOME/.hot-sauce" ]; then
-	if ask "Do you want to add hot sauce?" Y; then
-		. "$HOME/.hot-sauce"; printf "\n  You got hot sauce in your bag. 🔥 ${bold}Swag.${normal}\n";
-	else
-		print_success_muted "Hot sauce declined. Skipped.";
-	fi
-else
-	print_warning "No ~/.hot-sauce found. Skipping."
-fi
+# chapter "Adding hot sauce…"
+# if [ -f "$HOME/.hot-sauce" ]; then
+#	if ask "Do you want to add hot sauce?" Y; then
+#		. "$HOME/.hot-sauce"; printf "\n  You got hot sauce in your bag. 🔥 ${bold}Swag.${normal}\n";
+#	else
+#		print_success_muted "Hot sauce declined. Skipped.";
+#	fi
+#else
+#	print_warning "No ~/.hot-sauce found. Skipping."
+#fi
 
 ###############################################################################
 # 🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋🍋
