@@ -1,10 +1,11 @@
 # 🐝 Formation <a href="https://www.patreon.com/minamarkham"><img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" width="100"></a>
 
-![Let's get in formation](assets/formation.gif)
-
 > Formation is a shell script to set up a macOS laptop for design and development.
 
 It can be run multiple times on the same machine safely. It installs, upgrades, or skips packages based on what is already installed on the machine.
+
+## Alternative for manual Mac setup
+https://www.taniarascia.com/setting-up-a-brand-new-mac-for-development/
 
 ## Install
 
